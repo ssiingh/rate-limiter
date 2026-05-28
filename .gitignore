@@ -1,0 +1,35 @@
+# Build artifacts
+backend/dist/
+dist/
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.example
+
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Lock files (use pnpm-lock.yaml instead)
+package-lock.json
+
+# Coverage
+coverage/
+backend/coverage/
+
+# Build info
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
