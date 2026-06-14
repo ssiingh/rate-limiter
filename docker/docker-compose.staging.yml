@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: ratelimiter-redis-staging
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_staging_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ratelimiter-staging-net
+
+  backend:
+    image: ratelimiter:staging
+    container_name: ratelimiter-staging
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: staging
+      REDIS_URL: redis://redis:6379
+      PORT: 3000
+      LOG_LEVEL: info
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ratelimiter-staging-net
+
+volumes:
+  redis_staging_data:
+    driver: local
+
+networks:
+  ratelimiter-staging-net:
+    driver: bridge

@@ -1,0 +1,67 @@
+version: '3.9'
+
+# Redis Cluster: 3 masters + 3 replicas
+services:
+  redis-node-1:
+    image: redis:7.2-alpine
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports: ["7001:6379"]
+    volumes: [redis1_data:/data]
+    networks: [redis-cluster-net]
+
+  redis-node-2:
+    image: redis:7.2-alpine
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports: ["7002:6379"]
+    volumes: [redis2_data:/data]
+    networks: [redis-cluster-net]
+
+  redis-node-3:
+    image: redis:7.2-alpine
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports: ["7003:6379"]
+    volumes: [redis3_data:/data]
+    networks: [redis-cluster-net]
+
+  redis-node-4:
+    image: redis:7.2-alpine
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports: ["7004:6379"]
+    volumes: [redis4_data:/data]
+    networks: [redis-cluster-net]
+
+  redis-node-5:
+    image: redis:7.2-alpine
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports: ["7005:6379"]
+    volumes: [redis5_data:/data]
+    networks: [redis-cluster-net]
+
+  redis-node-6:
+    image: redis:7.2-alpine
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports: ["7006:6379"]
+    volumes: [redis6_data:/data]
+    networks: [redis-cluster-net]
+
+  redis-cluster-init:
+    image: redis:7.2-alpine
+    depends_on: [redis-node-1, redis-node-2, redis-node-3, redis-node-4, redis-node-5, redis-node-6]
+    command: >
+      sh -c "sleep 5 && redis-cli --cluster create
+        redis-node-1:6379 redis-node-2:6379 redis-node-3:6379
+        redis-node-4:6379 redis-node-5:6379 redis-node-6:6379
+        --cluster-replicas 1 --cluster-yes"
+    networks: [redis-cluster-net]
+
+volumes:
+  redis1_data:
+  redis2_data:
+  redis3_data:
+  redis4_data:
+  redis5_data:
+  redis6_data:
+
+networks:
+  redis-cluster-net:
+    driver: bridge
